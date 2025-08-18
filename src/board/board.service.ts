@@ -9,10 +9,18 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Board } from './entity/board.entity';
-import { createBoardDto } from './dto/createBoard.res.dto';
 import { UserService } from 'src/user/user.service';
 import { User, UserType } from 'src/user/entity/user.entity';
 import { purchaseReqDto } from './dto/purchase.req.dto';
+import { createReqDtoBoard } from './dto/create.req.dto.Board';
+import { createResDtoBoard } from './dto/create.res.dto.board';
+import { findAllReqDtoBoard } from './dto/findAll.req.dto.board';
+import { findAllResDtoBoard } from './dto/findAll.res.dto.board';
+import { findOneReqDtoBoard } from './dto/findOne.req.dto.Board';
+import { findOneResDtoBoard } from './dto/findOne.res.dto.board';
+import { removeReqDtoBoard } from './dto/remove.req.dto.board';
+import { removeResDtoBoard } from './dto/remove.res.dto.board';
+import { purchaseResDto } from './dto/purchase.res.dto';
 
 @Injectable()
 export class BoardService {
@@ -23,85 +31,98 @@ export class BoardService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async create(@Body() dto: createBoardDto, user: User): Promise<Board> {
-    const seller: User = await this.userService.findOne(user.id);
+  async create(
+    @Body() dto: createReqDtoBoard,
+    user: User,
+  ): Promise<createResDtoBoard> {
+    const seller = await this.userRepository.findOne({
+      where: { id: user.id, type: UserType.SELLER },
+    });
+    const response = new createResDtoBoard();
     if (!seller) {
-      throw new NotFoundException('Seller not found');
+      throw new NotFoundException();
     }
-    if (seller.type !== UserType.SELLER) {
-      throw new ForbiddenException('Only sellers can create boards');
-    }
-    const newBoard: Board = this.boardRepository.create({
-      ...dto,
-      user: seller,
-    });
-    return this.boardRepository.save(newBoard);
+    response.product_name = dto.product_name;
+    response.description = dto.description;
+    response.price = dto.price;
+    response.stock = dto.stock;
+    response.user = seller;
+    const newBoard: Board = this.boardRepository.create(response);
+    await this.boardRepository.save(newBoard);
+    return response;
   }
 
-  findAll(): Promise<Board[]> {
-    return this.boardRepository.find({ relations: ['user'] });
+  async findAll(dto: findAllReqDtoBoard): Promise<findAllResDtoBoard> {
+    const boards = await this.boardRepository.find();
+    const response = new findAllResDtoBoard();
+    response.boards = boards.map((board) => ({
+      product_name: board.product_name,
+      description: board.description,
+      price: board.price,
+      stock: board.stock,
+    }));
+    return response;
   }
 
-  async findOne(id: number): Promise<Board> {
+  async findOne(dto: findOneReqDtoBoard): Promise<findOneResDtoBoard> {
     const board = await this.boardRepository.findOne({
-      where: { id },
+      where: { id: dto.id },
       relations: ['user'],
     });
+    const response = new findOneResDtoBoard();
     if (!board) {
-      throw new NotFoundException('Board not found');
+      throw new NotFoundException();
     }
-    return board;
+    response.product_name = board.product_name;
+    response.description = board.description;
+    response.price = board.price;
+    response.stock = board.stock;
+    response.username = board.user.username;
+    return response;
   }
 
-  async remove(id: number, user: User): Promise<void> {
+  async remove(dto: removeReqDtoBoard, user: User): Promise<removeResDtoBoard> {
     const board = await this.boardRepository.findOne({
-      where: { id },
+      where: {
+        product_name: dto.product_name,
+      },
       relations: ['user'],
     });
+    const response = new removeResDtoBoard();
 
     if (!board) {
-      throw new NotFoundException('Board not found.');
-    }
-
-    if (board.user.id !== user.id) {
-      throw new UnauthorizedException(
-        'You do not have permission to delete this board.',
-      );
+      throw new NotFoundException('');
     }
 
     await this.boardRepository.remove(board);
+    return response;
   }
 
-  async purchase(dto: purchaseReqDto, user: User): Promise<Board> {
-    const { productId, quantity } = dto;
-    const buyer = await this.userService.findOne(user.id);
-
-    if (buyer.type !== UserType.BUYER) {
-      throw new BadRequestException('Only buyers can purchase products.');
+  async purchase(dto: purchaseReqDto, user: User): Promise<purchaseResDto> {
+    const { product_name, quantity } = dto;
+    const buyer = await this.userRepository.findOne({
+      where: { id: user.id, type: UserType.BUYER },
+    });
+    if (!buyer) {
+      throw new NotFoundException();
+    }
+    if (buyer.type !== UserType.BUYER || quantity <= 0) {
+      throw new BadRequestException();
     }
 
     const product = await this.boardRepository.findOne({
-      where: { id: productId },
+      where: { product_name: product_name },
       relations: ['user'],
     });
 
     if (!product) {
-      throw new NotFoundException('Product not found.');
-    }
-
-    if (quantity <= 0) {
-      throw new BadRequestException(
-        'Purchase quantity must be a positive number.',
-      );
-    }
-
-    if (product.stock < quantity) {
-      throw new BadRequestException('Not enough stock available.');
+      throw new NotFoundException();
     }
 
     const totalPrice = product.price * quantity;
-    if (buyer.bankbook < totalPrice) {
-      throw new BadRequestException('Not enough balance in bankbook.');
+
+    if (product.stock < quantity || buyer.bankbook < totalPrice) {
+      throw new BadRequestException();
     }
 
     const seller = product.user;
@@ -109,8 +130,16 @@ export class BoardService {
     seller.bankbook += totalPrice;
     product.stock -= quantity;
 
+    const response = new purchaseResDto();
+    response.product_name = product.product_name;
+    response.description = product.description;
+    response.price = product.price;
+    response.stock = product.stock;
+    response.username = buyer.username;
+
     await this.userRepository.save(buyer);
     await this.userRepository.save(seller);
-    return this.boardRepository.save(product);
+    await this.boardRepository.save(product);
+    return response;
   }
 }

@@ -9,27 +9,26 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from '@nestjs/common';
+import { loginReqDto } from './dto/login.req.dto';
+import { loginResDto } from './dto/login.res.dto';
+import { authReqDto } from './dto/auth.req.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() userDto: UserDto) {
-    const jwt = await this.authService.validateUser(userDto);
-    if (!jwt) throw new UnauthorizedException('Invalid credentials');
-
-    return {
-      accessToken: jwt.accessToken,
-    };
+  async login(@Body() dto: loginReqDto): Promise<loginResDto> {
+    return await this.authService.validateUser(dto);
   }
 
   @Get('auth')
   @UseGuards(AuthGuard('jwt'))
-  isAuthenticated(@Req() req: any) {
-    const user: any = req.user;
-    return user;
+  isAuthenticated(@Body() dto: authReqDto, @Req() req: Request) {
+    const user = req['user'];
+    const response: any = user;
+    return response;
   }
 }

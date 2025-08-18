@@ -9,10 +9,19 @@ import {
   Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { createUserDto } from './dto/create.res.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { ChargeReqDto } from './dto/charge.req.dto';
+import { chargeReqDto } from './dto/charge.req.dto';
+import { Request } from '@nestjs/common';
+import { registerReqDto } from './dto/register.req.dto';
+import { registerResDto } from './dto/register.res.dto';
+import { findAllReqDtoUser } from './dto/findAll.req.dto.user';
+import { findAllResDtoUser } from './dto/findAll.res.dto.user';
+import { findOneReqDtoUser } from './dto/findOne.req.dto.user';
+import { findOneResDtoUser } from './dto/findOne.res.dto';
+import { removeReqDtoUser } from './dto/remove.req.dto.user';
+import { removeResDtoUser } from './dto/remove.res.dto.user';
+import { chargeResDto } from './dto/charge.res.dto';
 
 @ApiTags('users')
 @Controller('user')
@@ -22,22 +31,22 @@ export class UserController {
   // 회원가입
   @Post('register')
   @ApiOperation({ summary: '회원가입' })
-  register(@Body() createUserDto: createUserDto) {
-    return this.userService.create(createUserDto);
+  register(@Body() dto: registerReqDto): Promise<registerResDto> {
+    return this.userService.create(dto);
   }
 
   // 모든 회원 조회
   @Get()
   @ApiOperation({ summary: '모든 회원 조회' })
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Body() dto: findAllReqDtoUser): Promise<findAllResDtoUser> {
+    return this.userService.findAll(dto);
   }
 
   // 회원 상세 조회
-  @Get(':id')
+  @Get('detail')
   @ApiOperation({ summary: '특정 회원 상세 조회' })
-  findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
+  findOne(@Body() dto: findOneReqDtoUser): Promise<findOneResDtoUser> {
+    return this.userService.findOne(dto);
   }
 
   // 회원 탈퇴
@@ -45,8 +54,12 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '특정 회원 탈퇴' })
   @UseGuards(AuthGuard)
-  remove(@Req() req: any) {
-    return this.userService.remove(req.user);
+  remove(
+    @Body() dto: removeReqDtoUser,
+    @Req() req: Request,
+  ): Promise<removeResDtoUser> {
+    const user = req['user'];
+    return this.userService.remove(dto, user);
   }
 
   // 계좌 충전
@@ -54,7 +67,11 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '계좌 충전' })
   @UseGuards(AuthGuard)
-  charge(@Body() dto: ChargeReqDto, @Req() req: any) {
-    return this.userService.charge(dto, req.user);
+  charge(
+    @Body() dto: chargeReqDto,
+    @Req() req: Request,
+  ): Promise<chargeResDto> {
+    const user = req['user'];
+    return this.userService.charge(dto, user);
   }
 }

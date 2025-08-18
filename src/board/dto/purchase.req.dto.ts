@@ -1,4 +1,4 @@
 export class purchaseReqDto {
-  productId: number;
+  product_name: string;
   quantity: number;
 }

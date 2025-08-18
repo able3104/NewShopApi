@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
-export class createBoardDto {
+export class createReqDtoBoard {
   @IsNotEmpty()
   @IsString()
   product_name: string;
@@ -16,4 +16,5 @@ export class createBoardDto {
   @IsNotEmpty()
   @IsNumber()
   stock: number;
+  created: Date;
 }

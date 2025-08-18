@@ -1,3 +1,3 @@
-export class ChargeReqDto {
+export class chargeReqDto {
   amount: number;
 }

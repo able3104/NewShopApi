@@ -1,4 +1,4 @@
-export class tokenDto {
+export class loginResDto {
   accessToken: string;
   expiresIn?: number;
 }

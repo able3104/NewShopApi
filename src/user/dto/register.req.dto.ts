@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { UserType } from '../entity/user.entity';
 
-export class createUserDto {
+export class registerReqDto {
   @IsNotEmpty()
   @IsString()
   username: string;
