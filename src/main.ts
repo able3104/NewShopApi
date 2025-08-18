@@ -7,8 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('E-commerce API')
-    .setDescription('The E-commerce API description')
+    .setTitle('Shop API')
+    .setDescription('The Shop API description')
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('users', '사용자 관련 API')

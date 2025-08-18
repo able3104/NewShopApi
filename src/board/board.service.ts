@@ -12,11 +12,11 @@ import { Board } from './entity/board.entity';
 import { UserService } from 'src/user/user.service';
 import { User, UserType } from 'src/user/entity/user.entity';
 import { purchaseReqDto } from './dto/purchase.req.dto';
-import { createReqDtoBoard } from './dto/create.req.dto.Board';
+import { createReqDtoBoard } from './dto/create.req.dto.board';
 import { createResDtoBoard } from './dto/create.res.dto.board';
 import { findAllReqDtoBoard } from './dto/findAll.req.dto.board';
 import { findAllResDtoBoard } from './dto/findAll.res.dto.board';
-import { findOneReqDtoBoard } from './dto/findOne.req.dto.Board';
+import { findOneReqDtoBoard } from './dto/findOne.req.dto.board';
 import { findOneResDtoBoard } from './dto/findOne.res.dto.board';
 import { removeReqDtoBoard } from './dto/remove.req.dto.board';
 import { removeResDtoBoard } from './dto/remove.res.dto.board';
@@ -66,7 +66,7 @@ export class BoardService {
 
   async findOne(dto: findOneReqDtoBoard): Promise<findOneResDtoBoard> {
     const board = await this.boardRepository.findOne({
-      where: { id: dto.id },
+      where: { product_name: dto.product_name },
       relations: ['user'],
     });
     const response = new findOneResDtoBoard();

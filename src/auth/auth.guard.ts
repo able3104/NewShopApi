@@ -8,6 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Payload } from './payload';
+import { payloadClass } from './payload.class';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,19 +19,19 @@ export class AuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException(
-        'Authentication token missing or malformed.',
-      );
+      throw new UnauthorizedException();
     }
     const token = authHeader.split(' ')[1];
 
     try {
       const payload: Payload = await this.jwtService.verify(token);
-      request['user'] = { id: payload.id, username: payload.username };
-
+      const userPayload = new payloadClass();
+      userPayload.payload.id = payload.id;
+      userPayload.payload.username = payload.username;
+      request['user'] = userPayload;
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired token.');
+      throw new UnauthorizedException();
     }
   }
 }

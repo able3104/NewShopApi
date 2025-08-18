@@ -25,6 +25,6 @@ import { jwtStrategy } from './auth.jwt';
   ],
   exports: [AuthService, JwtModule, PassportModule],
   controllers: [AuthController],
-  providers: [AuthService, jwtStrategy], // JwtService를 제거
+  providers: [AuthService, jwtStrategy],
 })
 export class AuthModule {}

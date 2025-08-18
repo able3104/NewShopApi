@@ -1,7 +1,32 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class purchaseResDto {
-  product_name: string;
-  description: string;
-  price: number;
-  stock: number;
+  @ApiProperty({
+    description: '구매자 이름',
+    example: 'exampleUser',
+  })
   username: string;
+
+  @ApiProperty({
+    description: '상품 이름',
+    example: 'exampleProduct',
+  })
+  product_name: string;
+
+  @ApiProperty({
+    description: '상품 설명',
+    example: 'Example product description.',
+  })
+  description: string;
+
+  @ApiProperty({
+    description: '상품 가격',
+    example: 100,
+  })
+  price: number;
+
+  @ApiProperty({
+    description: '상품 수량',
+  })
+  stock: number;
 }

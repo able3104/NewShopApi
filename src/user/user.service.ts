@@ -20,6 +20,7 @@ import { findOneResDtoUser } from './dto/findOne.res.dto';
 import { removeReqDtoUser } from './dto/remove.req.dto.user';
 import { removeResDtoUser } from './dto/remove.res.dto.user';
 import { chargeResDto } from './dto/charge.res.dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class UserService {
@@ -85,6 +86,10 @@ export class UserService {
       throw new NotFoundException();
     }
     userToCharge.bankbook += amount;
-    return this.userRepository.save(userToCharge);
+    await this.userRepository.save(userToCharge);
+    const response = new chargeResDto();
+    response.bankbook = userToCharge.bankbook;
+    response.username = userToCharge.username;
+    return response;
   }
 }
