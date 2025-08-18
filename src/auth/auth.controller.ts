@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Req,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -20,5 +24,12 @@ export class AuthController {
     return {
       accessToken: jwt.accessToken,
     };
+  }
+
+  @Get('auth')
+  @UseGuards(AuthGuard('jwt'))
+  isAuthenticated(@Req() req: any) {
+    const user: any = req.user;
+    return user;
   }
 }

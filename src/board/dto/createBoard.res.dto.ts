@@ -1,8 +1,19 @@
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+
 export class createBoardDto {
-  username: string;
-  password: string;
+  @IsNotEmpty()
+  @IsString()
   product_name: string;
-  product_description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
   price: number;
+
+  @IsNotEmpty()
+  @IsNumber()
   stock: number;
 }

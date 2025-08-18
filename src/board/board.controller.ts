@@ -24,7 +24,7 @@ export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   // 상품 생성 (seller만 가능)
-  @Post()
+  @Post('create')
   @ApiBearerAuth()
   @ApiOperation({ summary: '상품 생성' })
   @UseGuards(AuthGuard)

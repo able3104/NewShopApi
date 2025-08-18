@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entity/user.entity';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from 'src/user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { jwtStrategy } from './auth.jwt';
@@ -25,6 +25,6 @@ import { jwtStrategy } from './auth.jwt';
   ],
   exports: [AuthService, JwtModule, PassportModule],
   controllers: [AuthController],
-  providers: [AuthService, JwtService, jwtStrategy],
+  providers: [AuthService, jwtStrategy], // JwtService를 제거
 })
 export class AuthModule {}
