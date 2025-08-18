@@ -14,6 +14,7 @@ import { Request } from '@nestjs/common';
 import { loginReqDto } from './dto/login.req.dto';
 import { loginResDto } from './dto/login.res.dto';
 import { authReqDto } from './dto/auth.req.dto';
+import { authResDto } from './dto/auth.res.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,11 +25,14 @@ export class AuthController {
     return await this.authService.validateUser(dto);
   }
 
-  @Get('auth')
-  @UseGuards(AuthGuard('jwt'))
-  isAuthenticated(@Body() dto: authReqDto, @Req() req: Request) {
-    const user = req['user'];
-    const response: any = user;
-    return response;
-  }
+  // // TEST CODE
+  // @Get('auth')
+  // @UseGuards(AuthGuard('jwt'))
+  // async isAuthenticated(
+  //   @Body() dto: authReqDto,
+  //   @Req() req: Request,
+  // ): Promise<authResDto> {
+  //   const user = req['user'];
+  //   return await this.authService.isAuthenticated(dto, user);
+  // }
 }

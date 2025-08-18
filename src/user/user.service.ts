@@ -64,9 +64,11 @@ export class UserService {
 
   async remove(dto: removeReqDtoUser, user: User): Promise<removeResDtoUser> {
     const { id } = user;
-    const existingUser = await this.userRepository.findOne({ where: { id } });
+    const existingUser = await this.userRepository.findOne({
+      where: { id: id },
+    });
     if (!existingUser) {
-      throw new NotFoundException('');
+      throw new NotFoundException();
     }
     const response = new removeResDtoUser();
 

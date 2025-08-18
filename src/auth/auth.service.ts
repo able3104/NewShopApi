@@ -8,6 +8,8 @@ import { Payload } from './payload';
 import { payloadClass } from './payload.class';
 import { loginReqDto } from './dto/login.req.dto';
 import { loginResDto } from './dto/login.res.dto';
+import { authReqDto } from './dto/auth.req.dto';
+import { authResDto } from './dto/auth.res.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,5 +43,11 @@ export class AuthService {
     return this.findByfield({
       where: { id: payload.id },
     });
+  }
+
+  async isAuthenticated(dto: authReqDto, user: User): Promise<authResDto> {
+    const response = new authResDto();
+    response.user = user;
+    return response;
   }
 }
