@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/user/entity/user.entity';
+import { UserInfoDto } from './userInfo.dto';
 
 export class createResDtoBoard {
   @ApiProperty({
@@ -26,9 +27,15 @@ export class createResDtoBoard {
   })
   stock: number;
 
+  // @ApiProperty({
+  //   description: '유저 정보',
+  //   type: User,
+  // })
+  // user: User;
+
   @ApiProperty({
     description: '유저 정보',
-    type: User,
+    type: UserInfoDto,
   })
-  user: User;
+  userInfo: UserInfoDto;
 }

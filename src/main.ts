@@ -7,13 +7,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Shop API')
-    .setDescription('The Shop API description')
-    .setVersion('1.0')
+    .setTitle('The Shop API')
+    .setDescription('상품 판매 API')
     .addBearerAuth()
-    .addTag('users', '사용자 관련 API')
-    .addTag('boards', '상품 관련 API')
-    .addTag('auth', '인증 관련 API')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

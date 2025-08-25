@@ -20,18 +20,23 @@ export class AuthService {
   ) {}
 
   async validateUser(dto: loginReqDto): Promise<loginResDto> {
+    //사용자 체크
     const user = await this.findByfield({
       where: { username: dto.username, password: dto.password },
-    });
+    }); //User
     if (!user) throw new NotFoundException();
+
+    //payloadclass에 사용자 정보 주입
     const payloadclass = new payloadClass();
     payloadclass.payload.id = user.id;
     payloadclass.payload.username = user.username;
 
+    //payload 통한 토큰 생성
     const accessToken = this.jwtService.sign(payloadclass.payload);
+
+    //response 한다
     const response = new loginResDto();
     response.accessToken = accessToken;
-
     return response;
   }
 
@@ -45,9 +50,10 @@ export class AuthService {
     });
   }
 
-  async isAuthenticated(dto: authReqDto, user: User): Promise<authResDto> {
-    const response = new authResDto();
-    response.user = user;
-    return response;
-  }
+  // //TEST CODE
+  // async isAuthenticated(dto: authReqDto, user: User): Promise<authResDto> {
+  //   const response = new authResDto();
+  //   response.user = user;
+  //   return response;
+  // }
 }

@@ -7,6 +7,7 @@ import {
   UseGuards,
   Param,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -16,6 +17,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { chargeReqDto } from './dto/charge.req.dto';
 import { Request } from '@nestjs/common';
@@ -29,7 +32,7 @@ import { removeReqDtoUser } from './dto/remove.req.dto.user';
 import { removeResDtoUser } from './dto/remove.res.dto.user';
 import { chargeResDto } from './dto/charge.res.dto';
 
-@ApiTags('users')
+@ApiTags('Users - 사용자 관련 API')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -37,65 +40,68 @@ export class UserController {
   // 회원가입
   @Post('register')
   @ApiOperation({ summary: '회원가입' })
-  @ApiBody({ type: registerReqDto })
+  // @ApiBody({ type: registerReqDto })
   @ApiResponse({
     status: 201,
     description: '회원가입 성공',
   })
-  @ApiResponse({
-    status: 400,
-    description: '사용자 이름이 이미 존재합니다.',
+  @ApiBadRequestResponse({
+    description: '회원가입 실패',
   })
   async register(@Body() dto: registerReqDto): Promise<registerResDto> {
     return this.userService.create(dto);
   }
 
-  // 모든 회원 조회
-  @Get()
-  @ApiOperation({ summary: '모든 회원 조회' })
-  // @ApiBody({ type: findAllReqDtoUser })
-  @ApiResponse({
-    status: 200,
-    description: '모든 회원 조회 성공',
-    type: findAllResDtoUser,
-  })
-  @ApiResponse({
-    status: 404,
-    description: '회원이 존재하지 않습니다.',
-  })
-  findAll(@Body() dto: findAllReqDtoUser): Promise<findAllResDtoUser> {
-    return this.userService.findAll(dto);
-  }
+  // // 모든 회원 조회
+  // @Get()
+  // @ApiOperation({ summary: '모든 회원 조회' })
+  // // @ApiBody({ type: findAllReqDtoUser })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: '모든 회원 조회 성공',
+  //   type: findAllResDtoUser,
+  // })
+  // @ApiNotFoundResponse({
+  //   description: '회원이 존재하지 않습니다.',
+  // })
+  // findAll(@Body() dto: findAllReqDtoUser): Promise<findAllResDtoUser> {
+  //   return this.userService.findAll(dto);
+  // }
 
   // 회원 상세 조회
-  @Get('detail')
-  @ApiOperation({ summary: '특정 회원 상세 조회' })
-  @ApiBody({ type: findOneReqDtoUser })
+  @Get('mypage')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '내 정보 조회' })
+  //@ApiBody({ type: findOneReqDtoUser })
+  //@Body() 를 자동으로 읽음
   @ApiResponse({
     status: 200,
-    description: '회원 상세 조회 성공',
+    description: '내 정보 조회 성공',
     type: findOneResDtoUser,
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: '회원이 존재하지 않습니다.',
   })
-  findOne(@Body() dto: findOneReqDtoUser): Promise<findOneResDtoUser> {
-    return this.userService.findOne(dto);
+  @UseGuards(AuthGuard)
+  findOne(
+    // @Query() dto: findOneReqDtoUser,
+    @Req() req: Request,
+  ): Promise<findOneResDtoUser> {
+    const user = req['user'];
+    return this.userService.findOne(user);
   }
 
   // 회원 탈퇴
   @Delete()
   @ApiBearerAuth()
-  @ApiOperation({ summary: '특정 회원 탈퇴' })
+  @ApiOperation({ summary: '회원 탈퇴' })
   // @ApiBody({ type: removeReqDtoUser })
   @ApiResponse({
     status: 200,
     description: '회원 탈퇴 성공',
     // type: removeResDtoUser,
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: '회원이 존재하지 않습니다.',
   })
   @UseGuards(AuthGuard)
@@ -111,14 +117,13 @@ export class UserController {
   @Post('charge')
   @ApiBearerAuth()
   @ApiOperation({ summary: '계좌 충전' })
-  @ApiBody({ type: chargeReqDto })
+  // @ApiBody({ type: chargeReqDto })
   @ApiResponse({
     status: 200,
     description: '계좌 충전 성공',
     type: chargeResDto,
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: '회원이 존재하지 않습니다.',
   })
   @UseGuards(AuthGuard)

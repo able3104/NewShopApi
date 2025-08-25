@@ -26,11 +26,11 @@ import { AuthModule } from './auth/auth.module';
         synchronize: true,
       }),
     }),
-    BoardModule,
     UserModule,
+    BoardModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

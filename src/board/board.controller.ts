@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,6 +20,8 @@ import {
   ApiOkResponse,
   ApiBody,
   ApiResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { purchaseReqDto } from './dto/purchase.req.dto';
 import { Request } from '@nestjs/common';
@@ -33,7 +36,7 @@ import { removeReqDtoBoard } from './dto/remove.req.dto.board';
 import { removeResDtoBoard } from './dto/remove.res.dto.board';
 import { purchaseResDto } from './dto/purchase.res.dto';
 
-@ApiTags('boards')
+@ApiTags('Boards - 상품 관련 API')
 @UseGuards(AuthGuard)
 @Controller('board')
 export class BoardController {
@@ -42,16 +45,18 @@ export class BoardController {
   // 상품 생성 (seller만 가능)
   @Post('create')
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 생성' })
-  @ApiBody({ type: createReqDtoBoard })
+  @ApiOperation({
+    summary: '상품 생성 (판매자만 가능)',
+    // description: 'Authenication 검증 필요',
+  })
+  // @ApiBody({ type: createReqDtoBoard })
   @ApiResponse({
     status: 201,
     description: '상품 생성 성공',
     type: createResDtoBoard,
   })
-  @ApiResponse({
-    status: 404,
-    description: '상품 생성 실패',
+  @ApiNotFoundResponse({
+    description: '회원이 존재하지 않습니다.',
   })
   create(
     @Body() dto: createReqDtoBoard,
@@ -62,38 +67,36 @@ export class BoardController {
   }
 
   // 모든 상품 조회
-  @Get()
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '모든 상품 조회' })
-  @ApiBody({ type: findAllReqDtoBoard })
-  @ApiResponse({
-    status: 200,
-    description: '모든 상품 조회 성공',
-    type: findAllResDtoBoard,
-  })
-  @ApiResponse({
-    status: 404,
-    description: '상품이 존재하지 않습니다.',
-  })
-  findAll(@Body() dto: findAllReqDtoBoard): Promise<findAllResDtoBoard> {
-    return this.boardService.findAll(dto);
-  }
+  // @Get()
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: '모든 상품 조회' })
+  // // @ApiBody({ type: findAllReqDtoBoard })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: '모든 상품 조회 성공',
+  //   type: findAllResDtoBoard,
+  // })
+  // @ApiNotFoundResponse({
+  //   description: '회원이 존재하지 않습니다.',
+  // })
+  // findAll(@Body() dto: findAllReqDtoBoard): Promise<findAllResDtoBoard> {
+  //   return this.boardService.findAll(dto);
+  // }
 
   // 특정 상품 상세 조회
-  @Get('detail')
+  @Get('product')
   @ApiBearerAuth()
   @ApiOperation({ summary: '특정 상품 상세 조회' })
-  @ApiBody({ type: findOneReqDtoBoard })
+  // @ApiBody({ type: findOneReqDtoBoard })
   @ApiResponse({
     status: 200,
     description: '특정 상품 상세 조회 성공',
     type: findOneResDtoBoard,
   })
-  @ApiResponse({
-    status: 404,
-    description: '상품이 존재하지 않습니다.',
+  @ApiNotFoundResponse({
+    description: '회원이 존재하지 않습니다.',
   })
-  findOne(@Body() dto: findOneReqDtoBoard): Promise<findOneResDtoBoard> {
+  findOne(@Query() dto: findOneReqDtoBoard): Promise<findOneResDtoBoard> {
     return this.boardService.findOne(dto);
   }
 
@@ -101,14 +104,13 @@ export class BoardController {
   @Delete()
   @ApiBearerAuth()
   @ApiOperation({ summary: '특정 상품 삭제 (소유자만 가능)' })
-  @ApiBody({ type: removeReqDtoBoard })
+  // @ApiBody({ type: removeReqDtoBoard })
   @ApiResponse({
     status: 200,
     description: '상품 삭제 성공',
   })
-  @ApiResponse({
-    status: 404,
-    description: '상품이 존재하지 않습니다.',
+  @ApiNotFoundResponse({
+    description: '회원이 존재하지 않습니다.',
   })
   remove(
     @Body() dto: removeReqDtoBoard,
@@ -121,7 +123,19 @@ export class BoardController {
   // 상품 구매 (buyer만 가능)
   @Patch('purchase')
   @ApiBearerAuth()
-  @ApiOperation({ summary: '상품 구매' })
+  @ApiOperation({ summary: '상품 구매 (구매자만 가능)' })
+  // @ApiBody({ type: purchaseReqDto })
+  @ApiResponse({
+    status: 200,
+    description: '상품 구매 성공',
+    type: purchaseResDto,
+  })
+  @ApiNotFoundResponse({
+    description: '회원이 존재하지 않습니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '상품 구매 실패',
+  })
   purchase(
     @Body() dto: purchaseReqDto,
     @Req() req: Request,

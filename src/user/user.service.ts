@@ -30,66 +30,100 @@ export class UserService {
   ) {}
 
   async create(dto: registerReqDto): Promise<registerResDto> {
+    //user 체크
     const existingUser = await this.userRepository.findOne({
       where: { username: dto.username },
-    });
+    }); //User
     if (existingUser) {
       throw new BadRequestException();
     }
 
-    const newUser: User = this.userRepository.create(dto);
-    await this.userRepository.save(newUser);
+    //user 저장
+    const userEntity = new User();
+    userEntity.username = dto.username;
+    userEntity.password = dto.password;
+    userEntity.type = dto.type;
+    // await this.userRepository.create(userEntity);
+    await this.userRepository.save(userEntity);
+
+    // const newUser: User = this.userRepository.create(dto);
+    // await this.userRepository.save(newUser);
+
+    //response 한다
     const response = new registerResDto();
     return response;
   }
 
-  async findAll(dto: findAllReqDtoUser): Promise<findAllResDtoUser> {
-    const users = await this.userRepository.find();
-    const response = new findAllResDtoUser();
-    response.users = users.map((user) => user.username);
-    return response;
-  }
+  // async findAll(dto: findAllReqDtoUser): Promise<findAllResDtoUser> {
+  //   //유저 정보 전체 조회
+  //   const users = await this.userRepository.find();
+  //   //User
 
-  async findOne(dto: findOneReqDtoUser): Promise<findOneResDtoUser> {
-    const user = await this.userRepository.findOne({
-      where: { username: dto.username },
-    });
-    const response = new findOneResDtoUser();
+  //   //response 에 유저 이름만 담는다
+  //   const response = new findAllResDtoUser();
+  //   response.users = users.map((user) => user.username);
+  //   //response 한다
+  //   return response;
+  // }
+
+  async findOne(user: User): Promise<findOneResDtoUser> {
+    const { id } = user;
+    //user 체크
+    const existingUser = await this.userRepository.findOne({
+      where: { id: id },
+    }); //User
+    // 나를 조회
     if (!user) {
       throw new NotFoundException();
     }
+
+    //response 에 사용자 이름, 유형 을 담는다
+    const response = new findOneResDtoUser();
     response.username = user.username;
     response.type = user.type;
+    //response 한다
     return response;
   }
 
   async remove(dto: removeReqDtoUser, user: User): Promise<removeResDtoUser> {
     const { id } = user;
+    //사용자 존재 여부 체크
     const existingUser = await this.userRepository.findOne({
       where: { id: id },
-    });
+    }); //User
     if (!existingUser) {
       throw new NotFoundException();
     }
-    const response = new removeResDtoUser();
 
+    //사용자 정보 삭제
     await this.userRepository.remove(existingUser);
+
+    //response 한다
+    const response = new removeResDtoUser();
     return response;
   }
 
   async charge(dto: chargeReqDto, user: User): Promise<chargeResDto> {
     const { amount } = dto;
+    //사용자 정보 체크
     const userToCharge = await this.userRepository.findOne({
       where: { id: user.id },
-    });
+    }); //User
     if (!userToCharge) {
       throw new NotFoundException();
     }
+
+    //충전
     userToCharge.bankbook += amount;
+    //사용자 정보 업데이트
     await this.userRepository.save(userToCharge);
+
+    //response 한다
     const response = new chargeResDto();
     response.bankbook = userToCharge.bankbook;
     response.username = userToCharge.username;
     return response;
   }
 }
+
+//개발하기싫어요.... - 김도현 왈 -

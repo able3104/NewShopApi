@@ -11,7 +11,7 @@ export enum UserType {
 export class User {
   @PrimaryGeneratedColumn()
   @ApiProperty({
-    description: '사용자 ID',
+    description: '사용자 ID (PK)',
     example: 1,
   })
   id: number;

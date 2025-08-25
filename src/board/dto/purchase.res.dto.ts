@@ -21,12 +21,13 @@ export class purchaseResDto {
 
   @ApiProperty({
     description: '상품 가격',
-    example: 100,
+    example: 10,
   })
   price: number;
 
   @ApiProperty({
     description: '상품 수량',
+    example: 100,
   })
   stock: number;
 }
