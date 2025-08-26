@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class findAllResDtoUser {
   @ApiProperty({
@@ -6,5 +7,7 @@ export class findAllResDtoUser {
     type: [String],
     example: ['user1', 'user2', 'user3'],
   })
+  @IsNotEmpty()
+  @IsString()
   users: string[];
 }

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class findAllResDtoBoard {
   @ApiProperty({
@@ -19,6 +20,7 @@ export class findAllResDtoBoard {
       },
     ],
   })
+  @IsNotEmpty()
   boards: {
     // @ApiProperty({
     //   description: '상품 이름',

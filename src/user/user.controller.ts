@@ -46,7 +46,7 @@ export class UserController {
     description: '회원가입 성공',
   })
   @ApiBadRequestResponse({
-    description: '회원가입 실패',
+    description: '아이디 중복',
   })
   async register(@Body() dto: registerReqDto): Promise<registerResDto> {
     return this.userService.create(dto);
@@ -69,6 +69,7 @@ export class UserController {
   // }
 
   // 회원 상세 조회
+
   @Get('mypage')
   @ApiBearerAuth()
   @ApiOperation({ summary: '내 정보 조회' })
@@ -80,7 +81,7 @@ export class UserController {
     type: findOneResDtoUser,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   @UseGuards(AuthGuard)
   findOne(
@@ -102,7 +103,7 @@ export class UserController {
     // type: removeResDtoUser,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   @UseGuards(AuthGuard)
   remove(
@@ -124,7 +125,7 @@ export class UserController {
     type: chargeResDto,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   @UseGuards(AuthGuard)
   charge(

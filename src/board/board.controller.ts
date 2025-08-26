@@ -56,7 +56,7 @@ export class BoardController {
     type: createResDtoBoard,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   create(
     @Body() dto: createReqDtoBoard,
@@ -84,6 +84,7 @@ export class BoardController {
   // }
 
   // 특정 상품 상세 조회
+
   @Get('product')
   @ApiBearerAuth()
   @ApiOperation({ summary: '특정 상품 상세 조회' })
@@ -94,7 +95,7 @@ export class BoardController {
     type: findOneResDtoBoard,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   findOne(@Query() dto: findOneReqDtoBoard): Promise<findOneResDtoBoard> {
     return this.boardService.findOne(dto);
@@ -110,7 +111,7 @@ export class BoardController {
     description: '상품 삭제 성공',
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 아이디를 가진 회원 없음',
   })
   remove(
     @Body() dto: removeReqDtoBoard,
@@ -131,7 +132,7 @@ export class BoardController {
     type: purchaseResDto,
   })
   @ApiNotFoundResponse({
-    description: '회원이 존재하지 않습니다.',
+    description: '해당 정보를 가진 회원 / 상품 없음',
   })
   @ApiBadRequestResponse({
     description: '상품 구매 실패',
