@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
 
 export class createReqDtoBoard {
   @IsNotEmpty()
@@ -24,6 +24,7 @@ export class createReqDtoBoard {
     description: '상품 가격',
     example: 10,
   })
+  @Min(1)
   price: number;
 
   @IsNotEmpty()
@@ -32,5 +33,6 @@ export class createReqDtoBoard {
     description: '상품 재고',
     example: 100,
   })
+  @Min(1)
   stock: number;
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class chargeReqDto {
   @ApiProperty({
@@ -8,5 +8,6 @@ export class chargeReqDto {
   })
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
   amount: number;
 }
